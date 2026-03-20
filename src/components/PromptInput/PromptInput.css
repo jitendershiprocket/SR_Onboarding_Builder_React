@@ -1,0 +1,39 @@
+.prompt-section { background: #fff; border-radius: 12px; padding: 24px; border: 1px solid #e5e7eb; }
+.prompt-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.prompt-header .material-icons { color: #705cdf; font-size: 24px; }
+.prompt-header h3 { margin: 0; font-size: 18px; font-weight: 600; color: #1a1a2e; }
+.prompt-desc { color: #6b7280; font-size: 14px; margin-bottom: 16px; }
+
+.prompt-box { display: flex; flex-direction: column; gap: 12px; }
+.prompt-box textarea {
+  width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px;
+  font-size: 14px; font-family: inherit; resize: vertical; box-sizing: border-box;
+}
+.prompt-box textarea:focus { outline: none; border-color: #705cdf; box-shadow: 0 0 0 3px rgba(112,92,223,0.1); }
+.prompt-box textarea:disabled { background: #f9fafb; color: #9ca3af; }
+
+.generate-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 24px; background: #705cdf; color: #fff; border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 500; cursor: pointer; align-self: flex-end;
+}
+.generate-btn:hover:not(:disabled) { background: #5b46c9; }
+.generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.generate-btn .material-icons { font-size: 18px; }
+
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-msg { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 14px; background: #fef2f2; color: #dc2626; border-radius: 8px; font-size: 13px; }
+.error-msg .material-icons { font-size: 18px; }
+
+.sample-prompts { margin-top: 16px; padding-top: 16px; border-top: 1px solid #f3f4f6; }
+.sample-label { font-size: 12px; color: #9ca3af; margin-bottom: 8px; }
+.sample-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.sample-chip {
+  display: flex; align-items: center; gap: 4px; padding: 6px 12px;
+  background: #f3f0ff; color: #705cdf; border: 1px solid #e5deff; border-radius: 20px;
+  font-size: 12px; cursor: pointer;
+}
+.sample-chip:hover { background: #e5deff; }
+.sample-chip .material-icons { font-size: 14px; }
