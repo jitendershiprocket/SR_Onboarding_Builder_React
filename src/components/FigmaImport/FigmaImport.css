@@ -1,0 +1,43 @@
+.figma-section { background: #fff; border-radius: 12px; padding: 24px; border: 1px solid #e5e7eb; }
+.figma-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.figma-header .material-icons { color: #e87b35; font-size: 24px; }
+.figma-header h3 { margin: 0; font-size: 18px; font-weight: 600; color: #1a1a2e; }
+.figma-desc { color: #6b7280; font-size: 14px; margin-bottom: 16px; }
+
+.figma-box { display: flex; flex-direction: column; gap: 12px; }
+
+/* Drop Zone */
+.drop-zone {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; padding: 32px 16px;
+  border: 2px dashed #d1d5db; border-radius: 12px;
+  cursor: pointer; transition: all 0.2s;
+  background: #fafafa;
+}
+.drop-zone:hover { border-color: #e87b35; background: #fff8f3; }
+.drop-icon { font-size: 40px; color: #e87b35; }
+.drop-zone p { margin: 0; font-size: 14px; font-weight: 500; color: #374151; }
+.drop-hint { font-size: 12px; color: #9ca3af; }
+
+/* Preview */
+.preview-area { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; }
+.design-preview { width: 100%; max-height: 300px; object-fit: contain; display: block; background: #f9fafb; }
+.clear-btn {
+  position: absolute; top: 8px; right: 8px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(0,0,0,0.6); color: #fff; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.clear-btn .material-icons { font-size: 16px; }
+.clear-btn:hover { background: rgba(0,0,0,0.8); }
+
+/* Generate Button */
+.figma-generate-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 24px; background: #e87b35; color: #fff; border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 500; cursor: pointer; align-self: flex-end;
+}
+.figma-generate-btn:hover:not(:disabled) { background: #d06a2a; }
+.figma-generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.figma-generate-btn .material-icons { font-size: 18px; }

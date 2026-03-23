@@ -26,6 +26,7 @@
 .action-btn.edit:hover { border-color: #705cdf; color: #705cdf; }
 .action-btn.publish:hover { border-color: #10b981; color: #10b981; }
 .action-btn.archive:hover { border-color: #f59e0b; color: #f59e0b; }
+.action-btn.delete:hover { border-color: #ef4444; color: #ef4444; }
 
 .empty { display: flex; flex-direction: column; align-items: center; padding: 60px; color: #9ca3af; }
 .empty .material-icons { font-size: 48px; margin-bottom: 8px; }

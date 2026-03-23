@@ -34,6 +34,25 @@ export default function SchemaList() {
     catch (e: any) { alert(e.message); }
   };
 
+  const editAsNewVersion = async (id: number) => {
+    try {
+      const res = await api.updateSchema(id, {});
+      navigate(`/builder?id=${res.data.id}`);
+    } catch (e: any) { alert(e.message); }
+  };
+
+  const activate = async (id: number) => {
+    if (!confirm('Activate this version? It will become the live onboarding flow.')) return;
+    try { await api.activateVersion(id); load(); }
+    catch (e: any) { alert(e.message); }
+  };
+
+  const deleteSchema = async (id: number) => {
+    if (!confirm('Delete this schema permanently? This cannot be undone.')) return;
+    try { await api.deleteSchema(id); load(); }
+    catch (e: any) { alert(e.message); }
+  };
+
   return (
     <div className="list-page">
       <div className="page-header">
@@ -75,6 +94,24 @@ export default function SchemaList() {
                     </button>
                     <button className="action-btn publish" onClick={() => publish(s.id)}>
                       <span className="material-icons">publish</span> Publish
+                    </button>
+                    <button className="action-btn delete" onClick={() => deleteSchema(s.id)}>
+                      <span className="material-icons">delete</span> Delete
+                    </button>
+                  </>
+                )}
+                {s.status === 'published' && (
+                  <button className="action-btn edit" onClick={() => editAsNewVersion(s.id)}>
+                    <span className="material-icons">edit_note</span> Edit (New Version)
+                  </button>
+                )}
+                {s.status === 'archived' && (
+                  <>
+                    <button className="action-btn edit" onClick={() => editAsNewVersion(s.id)}>
+                      <span className="material-icons">edit_note</span> Edit (New Version)
+                    </button>
+                    <button className="action-btn publish" onClick={() => activate(s.id)}>
+                      <span className="material-icons">play_arrow</span> Activate
                     </button>
                   </>
                 )}

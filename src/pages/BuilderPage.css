@@ -22,7 +22,10 @@
 .btn-publish:hover:not(:disabled) { background: #059669; }
 
 .content-area { flex: 1; overflow: hidden; }
-.prompt-tab { padding: 32px; max-width: 800px; margin: 0 auto; }
+.prompt-tab { padding: 32px; max-width: 800px; margin: 0 auto; overflow-y: auto; max-height: 100%; }
+.prompt-divider { display: flex; align-items: center; gap: 16px; margin: 24px 0; }
+.divider-line { flex: 1; height: 1px; background: #e5e7eb; }
+.divider-text { font-size: 12px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
 .editor-preview { display: flex; height: 100%; }
 .editor-pane { flex: 1; overflow: hidden; border-right: 1px solid #e5e7eb; }
 .preview-pane { width: 420px; flex-shrink: 0; background: #fafafa; }
@@ -31,3 +34,7 @@
 .empty-state .material-icons { font-size: 56px; margin-bottom: 12px; }
 .empty-state h3 { margin: 0 0 4px; font-size: 18px; color: #6b7280; }
 .empty-state p { font-size: 13px; }
+
+.step-nav-preview { display: flex; gap: 4px; padding: 8px 12px; background: #fff; border-bottom: 1px solid #e5e7eb; }
+.step-nav-preview button { padding: 4px 12px; border: 1px solid #e5e7eb; background: #fff; border-radius: 6px; font-size: 12px; cursor: pointer; color: #6b7280; }
+.step-nav-preview button.active { border-color: #7c3aed; background: #f5f3ff; color: #7c3aed; font-weight: 600; }

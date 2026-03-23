@@ -4,7 +4,10 @@ import type { OnboardingSchema } from '../types/schema.types';
 import { DEFAULT_EMPTY_SCHEMA } from '../types/schema.types';
 import { api } from '../services/api';
 import PromptInput from '../components/PromptInput/PromptInput';
+import FigmaImport from '../components/FigmaImport/FigmaImport';
 import SchemaEditor from '../components/SchemaEditor/SchemaEditor';
+import StyleEditor from '../components/StyleEditor/StyleEditor';
+import AIEditBar from '../components/AIEditBar/AIEditBar';
 import LivePreview from '../components/LivePreview/LivePreview';
 import './BuilderPage.css';
 
@@ -12,7 +15,9 @@ export default function BuilderPage() {
   const [searchParams] = useSearchParams();
   const [schema, setSchema] = useState<OnboardingSchema | null>(null);
   const [dbId, setDbId] = useState<number | null>(null);
-  const [tab, setTab] = useState<'prompt' | 'editor'>('prompt');
+  const [tab, setTab] = useState<'prompt' | 'editor' | 'styles'>('prompt');
+  const [activeStepIdx, setActiveStepIdx] = useState(0);
+  const [inspectSection, setInspectSection] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [msg, setMsg] = useState('');
@@ -72,6 +77,9 @@ export default function BuilderPage() {
           <button className={tab === 'editor' ? 'active' : ''} onClick={() => setTab('editor')} disabled={!schema}>
             <span className="material-icons">edit</span> Editor
           </button>
+          <button className={tab === 'styles' ? 'active' : ''} onClick={() => setTab('styles')} disabled={!schema}>
+            <span className="material-icons">palette</span> Styles
+          </button>
         </div>
         <div className="actions">
           {msg && <span className="save-msg">{msg}</span>}
@@ -90,6 +98,12 @@ export default function BuilderPage() {
         {tab === 'prompt' && (
           <div className="prompt-tab">
             <PromptInput onGenerated={(s) => { setSchema(s); setDbId(null); setTab('editor'); }} />
+            <div className="prompt-divider">
+              <span className="divider-line" />
+              <span className="divider-text">OR</span>
+              <span className="divider-line" />
+            </div>
+            <FigmaImport onGenerated={(s) => { setSchema(s); setDbId(null); setTab('editor'); }} />
           </div>
         )}
 
@@ -104,7 +118,25 @@ export default function BuilderPage() {
           </div>
         )}
 
-        {tab === 'editor' && !schema && (
+        {tab === 'styles' && schema && (
+          <div className="editor-preview">
+            <div className="editor-pane">
+              <StyleEditor schema={schema} onChange={setSchema} activeStepIdx={activeStepIdx} focusSection={inspectSection} />
+            </div>
+            <div className="preview-pane">
+              <div className="step-nav-preview">
+                {schema.steps.map((_, i) => (
+                  <button key={i} className={activeStepIdx === i ? 'active' : ''} onClick={() => setActiveStepIdx(i)}>
+                    Step {i + 1}
+                  </button>
+                ))}
+              </div>
+              <LivePreview schema={schema} previewStepIdx={activeStepIdx} inspectMode={true} onInspectElement={(section) => setInspectSection(section)} />
+            </div>
+          </div>
+        )}
+
+        {(tab === 'editor' || tab === 'styles') && !schema && (
           <div className="empty-state">
             <span className="material-icons">dashboard_customize</span>
             <h3>No schema loaded</h3>

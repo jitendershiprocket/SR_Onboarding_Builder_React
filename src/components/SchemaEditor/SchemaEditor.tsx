@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import type { OnboardingSchema, OnboardingStep, FormField } from '../../types/schema.types';
 import { FIELD_TYPE_OPTIONS } from '../../types/schema.types';
+import { api } from '../../services/api';
 import './SchemaEditor.css';
 
 interface Props {
@@ -12,6 +13,12 @@ export default function SchemaEditor({ schema, onChange }: Props) {
   const [activeStepIdx, setActiveStepIdx] = useState(0);
   const [editingFieldIdx, setEditingFieldIdx] = useState<number | null>(null);
   const [showFieldMenu, setShowFieldMenu] = useState(false);
+  const [aiEditStepIdx, setAiEditStepIdx] = useState<number | null>(null);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
+  const [showAddStepAI, setShowAddStepAI] = useState(false);
+  const [addStepPrompt, setAddStepPrompt] = useState('');
   const menuRef = useRef<HTMLDivElement>(null);
 
   const activeStep = schema.steps[activeStepIdx];
@@ -49,6 +56,47 @@ export default function SchemaEditor({ schema, onChange }: Props) {
     s.steps.forEach((st, i) => (st.stepId = i + 1));
     setActiveStepIdx(to);
     update(s);
+  };
+
+  // ─── AI Step Edit ───────────────────────────────────────────
+
+  const aiEditStep = async (stepIdx: number) => {
+    if (!aiPrompt.trim() || aiLoading) return;
+    setAiLoading(true);
+    setAiError('');
+    try {
+      const res = await api.editSchemaWithAI(schema, `Edit ONLY step ${stepIdx + 1} (stepId: ${schema.steps[stepIdx].stepId}): ${aiPrompt.trim()}. Keep all other steps unchanged.`);
+      if (res.success && res.data) {
+        onChange(res.data);
+        setAiPrompt('');
+        setAiEditStepIdx(null);
+      } else {
+        setAiError(res.message || 'AI edit failed');
+      }
+    } catch (e: any) {
+      setAiError(e.message || 'AI edit failed');
+    }
+    setAiLoading(false);
+  };
+
+  const aiAddStep = async () => {
+    if (!addStepPrompt.trim() || aiLoading) return;
+    setAiLoading(true);
+    setAiError('');
+    try {
+      const res = await api.editSchemaWithAI(schema, `Add a NEW step at the end: ${addStepPrompt.trim()}. Keep all existing steps unchanged.`);
+      if (res.success && res.data) {
+        onChange(res.data);
+        setActiveStepIdx(res.data.steps.length - 1);
+        setAddStepPrompt('');
+        setShowAddStepAI(false);
+      } else {
+        setAiError(res.message || 'AI add step failed');
+      }
+    } catch (e: any) {
+      setAiError(e.message || 'AI add step failed');
+    }
+    setAiLoading(false);
   };
 
   // ─── Field Management ─────────────────────────────────────
@@ -197,7 +245,7 @@ export default function SchemaEditor({ schema, onChange }: Props) {
         <div className="steps-panel">
           <div className="panel-header">
             <h4>Steps</h4>
-            <button className="add-btn" onClick={addStep}><span className="material-icons">add</span></button>
+            <button className="add-btn" onClick={addStep} title="Add blank step"><span className="material-icons">add</span></button>
           </div>
           <div className="steps-list">
             {schema.steps.map((step, i) => (
@@ -373,9 +421,11 @@ export default function SchemaEditor({ schema, onChange }: Props) {
                             <button className="add-btn small" onClick={() => addPlatform(fi)}><span className="material-icons">add</span></button>
                           </div>
                           {(field as any).platforms?.map((p: any, pi: number) => (
-                            <div key={pi} className="option-row">
+                            <div key={pi} className="option-row platform-row">
                               <input value={p.name} onChange={(e) => updatePlatform(fi, pi, 'name', e.target.value)} placeholder="Name" />
                               <input value={p.key} onChange={(e) => updatePlatform(fi, pi, 'key', e.target.value)} placeholder="Key" className="small-input" />
+                              <input value={p.icon || ''} onChange={(e) => updatePlatform(fi, pi, 'icon', e.target.value)} placeholder="Icon URL" />
+                              <input value={p.placeholder || ''} onChange={(e) => updatePlatform(fi, pi, 'placeholder', e.target.value)} placeholder="Placeholder" />
                               <input value={p.helpText} onChange={(e) => updatePlatform(fi, pi, 'helpText', e.target.value)} placeholder="Help text" />
                               <button className="remove-btn" onClick={() => removePlatform(fi, pi)}><span className="material-icons">close</span></button>
                             </div>
@@ -386,6 +436,63 @@ export default function SchemaEditor({ schema, onChange }: Props) {
                   )}
                 </div>
               ))}
+            </div>
+
+            {/* AI Assistant */}
+            <div className="section ai-assistant-section">
+              <div className="ai-assistant-header">
+                <span className="material-icons ai-sparkle">auto_awesome</span>
+                <h4>AI Assistant</h4>
+                <span className="ai-step-tag">Step {activeStepIdx + 1}</span>
+              </div>
+              <p className="ai-assistant-desc">Tell AI what to change in this step</p>
+
+              <div className="ai-assistant-input">
+                <input
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && aiEditStep(activeStepIdx)}
+                  placeholder="e.g., Add a phone number field, Change title to..."
+                  disabled={aiLoading}
+                />
+                <button onClick={() => aiEditStep(activeStepIdx)} disabled={!aiPrompt.trim() || aiLoading}>
+                  {aiLoading ? <span className="ai-spinner" /> : <span className="material-icons">send</span>}
+                </button>
+              </div>
+
+              <div className="ai-quick-actions">
+                {[
+                  { label: 'Add phone field', prompt: 'Add a phone number field with validation' },
+                  { label: 'Add more options', prompt: 'Add 3 more relevant options to the existing fields' },
+                  { label: 'Improve labels', prompt: 'Improve all field labels and placeholders to be more user-friendly' },
+                  { label: 'Add validation', prompt: 'Add proper validation to all fields' },
+                ].map((action, i) => (
+                  <button key={i} className="ai-quick-chip" onClick={() => { setAiPrompt(action.prompt); }} disabled={aiLoading}>
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+
+              {aiError && <div className="ai-inline-error"><span className="material-icons">error</span> {aiError}</div>}
+
+              <div className="ai-add-step-divider">
+                <span className="divider-line" />
+                <span className="divider-text">or</span>
+                <span className="divider-line" />
+              </div>
+
+              <div className="ai-assistant-input">
+                <input
+                  value={addStepPrompt}
+                  onChange={(e) => setAddStepPrompt(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && aiAddStep()}
+                  placeholder="Add a new step... e.g., Ask about courier preferences"
+                  disabled={aiLoading}
+                />
+                <button onClick={aiAddStep} disabled={!addStepPrompt.trim() || aiLoading}>
+                  {aiLoading ? <span className="ai-spinner" /> : <span className="material-icons">add</span>}
+                </button>
+              </div>
             </div>
           </div>
         )}

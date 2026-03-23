@@ -8,6 +8,7 @@ export interface OnboardingSchema {
   totalSteps: number;
   steps: OnboardingStep[];
   settings: SchemaSettings;
+  styles?: SchemaStyles;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -185,6 +186,67 @@ export interface FieldValidator {
   value?: string | number;
   message: string;
   customType?: string;
+}
+
+// ─── Styles ─────────────────────────────────────────────────
+
+export interface SchemaStyles {
+  global: GlobalStyles;
+  stepOverrides?: Record<number, Partial<StepStyles>>;
+}
+
+export interface GlobalStyles extends StepStyles {
+  container?: ContainerStyle;
+}
+
+export interface StepStyles {
+  background?: BackgroundStyle;
+  typography?: TypographyStyle;
+  button?: ButtonStyle;
+  card?: CardStyle;
+  spacing?: SpacingStyle;
+}
+
+export interface BackgroundStyle {
+  type: 'color' | 'image' | 'gradient';
+  color?: string;
+  image?: string;
+  gradient?: string;
+}
+
+export interface TypographyStyle {
+  fontFamily?: string;
+  headingColor?: string;
+  headingSize?: string;
+  bodyColor?: string;
+  bodySize?: string;
+  labelColor?: string;
+}
+
+export interface ButtonStyle {
+  backgroundColor?: string;
+  textColor?: string;
+  borderRadius?: string;
+  hoverColor?: string;
+}
+
+export interface CardStyle {
+  gridColumns?: number;
+  gap?: string;
+  borderRadius?: string;
+  borderColor?: string;
+  selectedBorderColor?: string;
+  selectedBgColor?: string;
+}
+
+export interface SpacingStyle {
+  padding?: string;
+  sectionGap?: string;
+}
+
+export interface ContainerStyle {
+  maxWidth?: string;
+  alignment?: 'left' | 'center' | 'right';
 }
 
 // ─── Helpers ─────────────────────────────────────────────────
